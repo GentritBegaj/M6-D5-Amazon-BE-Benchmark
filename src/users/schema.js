@@ -6,6 +6,7 @@ const UserSchema = new Schema(
     surname: String,
     email: String,
     age: Number,
+    cart: { type: Schema.Types.ObjectId, ref: "Cart" },
   },
   { timestamps: true }
 );
