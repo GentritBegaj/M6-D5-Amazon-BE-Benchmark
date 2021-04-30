@@ -3,6 +3,10 @@ import ProductModel from "./schema.js";
 import ReviewModel from "../reviews/schema.js";
 import mongoose from "mongoose";
 import q2m from "query-to-mongo";
+import multer from "multer";
+import { v2 as cloudinary } from "cloudinary";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
+import { extname } from "path";
 
 const router = Router();
 
@@ -197,5 +201,57 @@ router.delete("/:productId/reviews/:reviewId", async (req, res, next) => {
     next(error);
   }
 });
+
+const cloudStorage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "Strive-Amazon-API",
+  },
+});
+
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.API_SECRET,
+});
+
+const cloudMulter = multer({
+  storage: cloudStorage,
+  fileFilter: function (req, file, next) {
+    const acceptedExtensions = [".png", ".jpg", ".gif", "bmp", ".jpeg"];
+    if (!acceptedExtensions.includes(extname(file.originalname))) {
+      return next(
+        new ErrorResponse(
+          `Image type not allowed: ${extname(file.originalname)}`
+        )
+      );
+    }
+    next(null, true);
+  },
+});
+
+router.post(
+  "/:productId/upload",
+  cloudMulter.single("picture"),
+  async (req, res, next) => {
+    try {
+      const modifiedProduct = await ProductModel.findByIdAndUpdate(
+        {
+          _id: req.params.productId,
+        },
+        {
+          $set: {
+            imageUrl: req.file.path,
+          },
+        },
+        { new: true }
+      );
+      res.send(modifiedProduct);
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  }
+);
 
 export default router;

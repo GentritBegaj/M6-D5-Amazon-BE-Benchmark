@@ -39,10 +39,10 @@ router.get("/", async (req, res, next) => {
     const total = await UserModel.countDocuments(query.criteria);
 
     const users = await UserModel.find(query.criteria, query.options.fields)
+      .populate("cart")
       .skip(query.options.skip)
       .limit(query.options.limit)
       .sort(query.options.sort);
-
     res.send({ links: query.links("/users", total), users });
   } catch (error) {
     console.log(error);

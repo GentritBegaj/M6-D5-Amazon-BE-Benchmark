@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import bodyParser from "body-parser";
 import productsRoutes from "./products/index.js";
 import usersRoutes from "./users/index.js";
+import cartsRoutes from "./carts/index.js";
 import {
   badRequestErrorHandler,
   notFoundErrorHandler,
@@ -18,6 +19,7 @@ server.use(cors());
 server.use(express.json());
 server.use("/products", productsRoutes);
 server.use("/users", usersRoutes);
+server.use("/carts", cartsRoutes);
 
 console.log(listEndpoints(server));
 
