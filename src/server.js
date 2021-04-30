@@ -34,6 +34,12 @@ mongoose
     useUnifiedTopology: true,
   })
   .then(
-    server.listen(port, () => console.log(`Server is running on port ${port}`))
+    server.listen(port, () => {
+      if (process.env.NODE_ENV === "production") {
+        console.log("Server is running on cloud on port", port);
+      } else {
+        console.log(`Server is running on port ${port}`);
+      }
+    })
   )
   .catch((error) => console.log(error));
