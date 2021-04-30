@@ -5,7 +5,6 @@ import q2m from "query-to-mongo";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import { v2 } from "cloudinary";
 import multer from "multer";
-import { Result } from "express-validator";
 const router = Router();
 // cloudinary.config({
 //   cloud_name: process.env.CLOUD_NAME,
