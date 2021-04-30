@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import listEndpoints from "express-list-endpoints";
 import mongoose from "mongoose";
+import bodyParser from "body-parser";
 import productsRoutes from "./products/index.js";
 import usersRoutes from "./users/index.js";
 import {
