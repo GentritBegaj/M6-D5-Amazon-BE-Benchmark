@@ -11,22 +11,21 @@ router.post("/:userId/addProduct", async (req, res, next) => {
     if (product) {
       const productToAdd = {
         ...product.toObject(),
-        quantity: req.body.quantity,
       };
 
       const isProductThere = await CartModel.findProductInCart(
         req.params.userId,
         req.body._id
       );
+      console.log(isProductThere);
       if (isProductThere) {
-        await CartModel.incrementQuantity(
-          req.params.userId,
-          req.body._id,
-          req.body.quantity
-        );
+        await CartModel.incrementQuantity(req.params.userId, req.body._id);
         res.send("Quantity incremented");
       } else {
-        await CartModel.addProductToCart(req.params.userId, productToAdd);
+        await CartModel.addProductToCart(req.params.userId, {
+          ...productToAdd,
+          quantity: 1,
+        });
         res.send("New product added");
       }
     } else {

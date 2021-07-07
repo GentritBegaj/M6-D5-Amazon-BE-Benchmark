@@ -94,7 +94,7 @@ router.get("/", async (req, res, next) => {
     const total = await UserModel.countDocuments(query.criteria);
 
     const users = await UserModel.find(query.criteria, query.options.fields)
-      .populate("cart")
+      .populate({ path: "cart", populate: { path: "products._id" } })
       .skip(query.options.skip)
       .limit(query.options.limit)
       .sort(query.options.sort);

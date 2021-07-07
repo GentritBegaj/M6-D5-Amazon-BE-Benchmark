@@ -8,13 +8,8 @@ const CartSchema = new Schema(
     ownerId: { type: Schema.Types.ObjectId, ref: "User" },
     products: [
       {
-        name: String,
-        brand: String,
-        category: String,
-        price: Number,
+        _id: { type: Schema.Types.ObjectId, ref: "Product" },
         quantity: Number,
-        imageUrl: String,
-        _id: String,
       },
     ],
     status: { type: String, enum: ["active", "paid"] },
@@ -25,30 +20,25 @@ const CartSchema = new Schema(
 CartSchema.static("findProductInCart", async function (userId, productId) {
   const isProductThere = await this.findOne({
     ownerId: userId,
-    status: "active",
-    "products._id": productId,
+    "products._id": mongoose.Types.ObjectId(productId),
   });
   return isProductThere;
 });
 
-CartSchema.static(
-  "incrementQuantity",
-  async function (userId, productId, quantity) {
-    await this.findOneAndUpdate(
-      {
-        ownerId: userId,
-        status: "active",
-        "products._id": productId,
-      },
-      {
-        $inc: { "products.$.quantity": quantity },
-      },
-      {
-        upsert: true,
-      }
-    );
-  }
-);
+CartSchema.static("incrementQuantity", async function (userId, productId) {
+  await this.findOneAndUpdate(
+    {
+      ownerId: mongoose.Types.ObjectId(userId),
+      "products._id": mongoose.Types.ObjectId(productId),
+    },
+    {
+      $inc: { "products.$.quantity": 1 },
+    },
+    {
+      upsert: true,
+    }
+  );
+});
 
 CartSchema.static("addProductToCart", async function (userId, product) {
   const cart = await this.findOneAndUpdate(
